@@ -7,11 +7,22 @@ import org.springframework.kafka.annotation.KafkaListener;
 // import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 @Service
 public class TransactionListener {
 
-    @KafkaListener(topics = "${general.kafka-topic}", groupId = "midas-group")
-    public void listen(Transaction transaction) {
-        System.out.println("Received Transaction: " + transaction);
-    }
+    @Autowired
+    private DatabaseConduit databaseConduit;
+
+    @KafkaListener(topics = "transactions", groupId = "midas-group")
+public void listen(Transaction transaction) {
+    System.out.println("Processing transaction: " + transaction);
+    
+    // Process transaction
+    databaseConduit.processTransaction(transaction);
+
+    System.out.println("Transaction processed: " + transaction);
+}
+
 }
